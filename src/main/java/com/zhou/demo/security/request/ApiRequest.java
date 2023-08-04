@@ -1,4 +1,4 @@
-package com.zhou.demo.security;
+package com.zhou.demo.security.request;
 
 /**
  * 三方对接的基础DTO对象
@@ -7,7 +7,7 @@ package com.zhou.demo.security;
  * @version 1.0.0
  * @date 2023/8/4 下午3:26
  */
-public class BaseDTO {
+public class ApiRequest {
     /**
      * 应用ID
      */
@@ -37,7 +37,7 @@ public class BaseDTO {
         return appId;
     }
 
-    public BaseDTO setAppId(String appId) {
+    public ApiRequest setAppId(String appId) {
         this.appId = appId;
         return this;
     }
@@ -46,7 +46,7 @@ public class BaseDTO {
         return nonce;
     }
 
-    public BaseDTO setNonce(String nonce) {
+    public ApiRequest setNonce(String nonce) {
         this.nonce = nonce;
         return this;
     }
@@ -55,7 +55,7 @@ public class BaseDTO {
         return timestamp;
     }
 
-    public BaseDTO setTimestamp(String timestamp) {
+    public ApiRequest setTimestamp(String timestamp) {
         this.timestamp = timestamp;
         return this;
     }
@@ -64,7 +64,7 @@ public class BaseDTO {
         return data;
     }
 
-    public BaseDTO setData(String data) {
+    public ApiRequest setData(String data) {
         this.data = data;
         return this;
     }
@@ -73,14 +73,14 @@ public class BaseDTO {
         return signature;
     }
 
-    public BaseDTO setSignature(String signature) {
+    public ApiRequest setSignature(String signature) {
         this.signature = signature;
         return this;
     }
 
     @Override
     public String toString() {
-        return "BaseDTO{" +
+        return "ApiRequest{" +
                 "appId='" + appId + '\'' +
                 ", nonce='" + nonce + '\'' +
                 ", timestamp='" + timestamp + '\'' +

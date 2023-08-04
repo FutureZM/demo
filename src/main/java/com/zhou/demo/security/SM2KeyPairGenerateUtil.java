@@ -1,6 +1,6 @@
 package com.zhou.demo.security;
 
-import cn.hutool.core.util.HexUtil;
+import com.zhou.demo.util.HexUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
@@ -11,7 +11,9 @@ import java.security.SecureRandom;
 
 
 /**
- * todo: 签名逻辑，加密逻辑，验签逻辑，解密逻辑
+ * 生成密钥对
+ * - 基于SM2推荐的曲线参数
+ * - == 基于SM2的OID构建: 1.2.156.10197.1.301
  *
  * @author laurence
  */
@@ -25,14 +27,14 @@ public class SM2KeyPairGenerateUtil {
         keyPairGenerate(generator);
     }
 
-    public static void keyPairGenerate(ECKeyPairGenerator generator) {
+    private static void keyPairGenerate(ECKeyPairGenerator generator) {
         // 生成客户端的密钥对
         AsymmetricCipherKeyPair clientKeyPair = generator.generateKeyPair();
         ECPrivateKeyParameters clientPrivateKey = (ECPrivateKeyParameters) clientKeyPair.getPrivate();
         ECPublicKeyParameters clientPublicKey = (ECPublicKeyParameters) clientKeyPair.getPublic();
 
-        System.out.println(HexUtil.encodeHex(clientPrivateKey.getD().toByteArray(), false));
-        System.out.println(new String(HexUtil.encodeHex(clientPublicKey.getQ().getAffineXCoord().getEncoded(), false))
-                + new String(HexUtil.encodeHex(clientPublicKey.getQ().getAffineYCoord().getEncoded(), false)));
+        System.out.println(HexUtils.encodeHex(clientPrivateKey.getD().toByteArray(), false));
+        System.out.println(new String(HexUtils.encodeHex(clientPublicKey.getQ().getAffineXCoord().getEncoded(), false))
+                + new String(HexUtils.encodeHex(clientPublicKey.getQ().getAffineYCoord().getEncoded(), false)));
     }
 }

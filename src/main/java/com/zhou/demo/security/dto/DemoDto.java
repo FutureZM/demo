@@ -1,4 +1,4 @@
-package com.zhou.demo.security;
+package com.zhou.demo.security.dto;
 
 
 /**

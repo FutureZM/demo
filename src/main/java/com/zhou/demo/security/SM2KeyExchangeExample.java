@@ -48,9 +48,9 @@ public class SM2KeyExchangeExample {
         byte[] serverSharedSecret = generateSharedSecret(serverPrivateKey, clientPublicKey);
 
         // 检查双方生成的共享密钥是否相同
-        System.out.println("Client shared secret: " + bytesToHex(clientSharedSecret));
-        System.out.println("Server shared secret: " + bytesToHex(serverSharedSecret));
-        System.out.println("Shared secrets are " + (Arrays.equals(clientSharedSecret, serverSharedSecret) ? "the same" : "different"));
+        System.out.println("SM2KeyAbstract shared secret: " + bytesToHex(clientSharedSecret));
+        System.out.println("Server shared secret        : " + bytesToHex(serverSharedSecret));
+        System.out.println("Shared secrets are          : " + (Arrays.equals(clientSharedSecret, serverSharedSecret) ? "the same" : "different"));
     }
 
     private static byte[] generateSharedSecret(ECPrivateKeyParameters privateKey, ECPublicKeyParameters publicKey) {

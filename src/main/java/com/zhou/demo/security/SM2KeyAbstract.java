@@ -1,6 +1,6 @@
 package com.zhou.demo.security;
 
-import cn.hutool.core.util.HexUtil;
+import com.zhou.demo.util.HexUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -18,23 +18,20 @@ import java.math.BigInteger;
  * @version 1.0.0
  * @date 2023/8/4 上午9:57
  */
-public abstract class Client {
+public abstract class SM2KeyAbstract {
 
     protected String generateSharedSecret(String ownPrivateKey, String otherPublicKey) {
         // 创建ECPublicKeyParameters
         ECPublicKeyParameters publicKeyParameters = convertECPublicKeyParameters(otherPublicKey);
-        System.out.println(new String(HexUtil.encodeHex(publicKeyParameters.getQ().getAffineXCoord().getEncoded(), false))
-                + new String(HexUtil.encodeHex(publicKeyParameters.getQ().getAffineYCoord().getEncoded(), false)));
 
         // 构建ECPrivateKeyParameters
         ECPrivateKeyParameters ecPrivateKeyParameters = convertECPrivateKeyParameters(ownPrivateKey);
-        System.out.println(HexUtil.encodeHex(ecPrivateKeyParameters.getD().toByteArray(), false));
 
         //计算协商密钥
         ECDHBasicAgreement agreement = new ECDHBasicAgreement();
         agreement.init(ecPrivateKeyParameters);
         BigInteger sharedSecret = agreement.calculateAgreement(publicKeyParameters);
-        return HexUtil.encodeHexStr(sharedSecret.toByteArray(), false);
+        return HexUtils.encodeHexStr(sharedSecret.toByteArray(), false);
     }
 
     /**
@@ -42,7 +39,7 @@ public abstract class Client {
      */
     public static ECPrivateKeyParameters convertECPrivateKeyParameters(String hexPrivateKey) {
         // 将16进制字符串转换为字节数组
-        byte[] privateKeyBytes = HexUtil.decodeHex(hexPrivateKey);
+        byte[] privateKeyBytes = HexUtils.decodeHex(hexPrivateKey);
         // 创建ECPrivateKeyParameters
         return new ECPrivateKeyParameters(new BigInteger(1, privateKeyBytes), getECDomainParameters());
     }
@@ -56,8 +53,8 @@ public abstract class Client {
         String hexPublicKeyY = otherHexPublicKey.substring(len);
 
         // 将16进制字符串转换为字节数组
-        byte[] publicKeyXBytes = HexUtil.decodeHex(hexPublicKeyX);
-        byte[] publicKeyYBytes = HexUtil.decodeHex(hexPublicKeyY);
+        byte[] publicKeyXBytes = HexUtils.decodeHex(hexPublicKeyX);
+        byte[] publicKeyYBytes = HexUtils.decodeHex(hexPublicKeyY);
         final ECDomainParameters domainParameters = getECDomainParameters();
 
         // 构建ECPoint

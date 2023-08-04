@@ -30,7 +30,6 @@ public class ObjectUtils {
             }
         }
         Collections.sort(resultList);
-        System.out.println(String.join(delimiter, resultList));
         return String.join(delimiter, resultList);
     }
 }
