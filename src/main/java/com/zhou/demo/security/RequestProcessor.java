@@ -1,6 +1,5 @@
 package com.zhou.demo.security;
 
-import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.exception.SignatureException;
 import com.zhou.demo.security.exception.VerifySignatureException;
 import com.zhou.demo.security.request.ApiRequest;
