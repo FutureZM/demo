@@ -12,6 +12,9 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
 
+/**
+ * @author laurence
+ */
 public class SM2KeyExchangeExample {
 
 
