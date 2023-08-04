@@ -11,6 +11,14 @@ public class DemoDto {
     public String name;
     public Integer age;
 
+    public DemoDto() {
+    }
+
+    public DemoDto(String name, Integer age) {
+        this.name = name;
+        this.age = age;
+    }
+
     public String getName() {
         return name;
     }
@@ -27,6 +35,13 @@ public class DemoDto {
     public DemoDto setAge(Integer age) {
         this.age = age;
         return this;
+    }
 
+    @Override
+    public String toString() {
+        return "DemoDto{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
     }
 }

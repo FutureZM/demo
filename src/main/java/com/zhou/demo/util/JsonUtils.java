@@ -79,7 +79,7 @@ public class JsonUtils<T> {
 
     @SneakyThrows
     public static <T> T parse(String jsonData, Class<T> beanType) {
-        if (StringUtils.hasText(jsonData)) {
+        if (!StringUtils.hasText(jsonData)) {
             return null;
         }
         return OBJECT_MAPPER.readValue(jsonData, beanType);
@@ -90,7 +90,7 @@ public class JsonUtils<T> {
      */
     @SneakyThrows
     public static <T> List<T> ofList(String jsonData, Class<T> type) {
-        if (StringUtils.hasText(jsonData)) {
+        if (!StringUtils.hasText(jsonData)) {
             return null;
         }
         JavaType javaType = OBJECT_MAPPER.getTypeFactory().constructParametricType(List.class, type);
