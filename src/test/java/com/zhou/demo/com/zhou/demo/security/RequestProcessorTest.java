@@ -3,6 +3,7 @@ package com.zhou.demo.com.zhou.demo.security;
 import com.zhou.demo.security.RequestProcessor;
 import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.request.ApiRequest;
+import com.zhou.demo.util.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 
@@ -17,6 +18,7 @@ public class RequestProcessorTest {
     static {
         demo = new DemoDto().setName("2023年了, 谁还用传统的编程方式").setAge(23);
         apiRequest = RequestProcessor.buildApiRequest(APP_ID_DEMO, CLIENT_PRIVATE_KEY, SERVER_PUBLIC_KEY, demo);
+        System.out.println(JsonUtils.toString(apiRequest));
     }
 
     @Test
