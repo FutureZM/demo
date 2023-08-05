@@ -16,9 +16,10 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
+ * filter不可以直接家@Component 否则@WebFilter的urlPatterns配置失效。处理方法去掉@Component注解, 配置类加上@ServletComponentScan, 此处选择添加在DemoApplication上
+ *
  * @author laurence
  */
-@Component
 @WebFilter(urlPatterns = "/api/*")
 public class SM2ProcessFilter implements Filter {
 
