@@ -16,7 +16,7 @@ public class RequestProcessorTest {
     private static ApiRequest apiRequest;
 
     static {
-        demo = new DemoDto().setName("2023年了, 谁还用传统的编程方式").setAge(23);
+        demo = new DemoDto().setName("2023年了, 谁还用传统的编程方式1").setAge(23);
         apiRequest = RequestProcessor.buildApiRequest(APP_ID_DEMO, CLIENT_PRIVATE_KEY, SERVER_PUBLIC_KEY, demo);
         System.out.println(JsonUtils.toString(apiRequest));
     }

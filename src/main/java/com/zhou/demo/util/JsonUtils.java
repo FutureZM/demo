@@ -1,8 +1,8 @@
 package com.zhou.demo.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,8 +58,15 @@ public class JsonUtils<T> {
     }
 
     /**
-     *
-     * @param data data
+     * 将对象转换成json字符串。
+     */
+    @SneakyThrows
+    public static String toStringAlways(Object data) {
+        return OBJECT_MAPPER.writeValueAsString(data);
+    }
+
+    /**
+     * @param data   data
      * @param format for example: yyyy-MM-dd
      * @return String
      */
@@ -82,6 +88,14 @@ public class JsonUtils<T> {
         if (!StringUtils.hasText(jsonData)) {
             return null;
         }
+        return OBJECT_MAPPER.readValue(jsonData, beanType);
+    }
+
+    /**
+     * 处理 嵌套的范型
+     */
+    @SneakyThrows
+    public static <T> T parseWithTypeReference(String jsonData, TypeReference<T> beanType) {
         return OBJECT_MAPPER.readValue(jsonData, beanType);
     }
 
