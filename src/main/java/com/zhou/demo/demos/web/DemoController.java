@@ -2,8 +2,8 @@ package com.zhou.demo.demos.web;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhou.demo.demos.web.result.Result;
-import com.zhou.demo.security.RequestProcessor;
-import com.zhou.demo.security.ResponseProcessor;
+import com.zhou.demo.security.processor.RequestProcessor;
+import com.zhou.demo.security.processor.ResponseProcessor;
 import com.zhou.demo.security.SMConst;
 import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.request.ApiRequest;

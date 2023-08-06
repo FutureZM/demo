@@ -1,5 +1,6 @@
-package com.zhou.demo.security;
+package com.zhou.demo.security.processor;
 
+import com.zhou.demo.security.SM2EncryptionAndSignature;
 import com.zhou.demo.security.exception.SignatureException;
 import com.zhou.demo.security.exception.VerifySignatureException;
 import com.zhou.demo.security.request.Base;
@@ -10,9 +11,12 @@ import org.bouncycastle.crypto.CryptoException;
 /**
  * @author laurence
  */
-public abstract class BaseApiProcessor {
+abstract class BaseApiProcessor {
 
-    public static String parse(Base basePojo, String privateKey, String publicKey) {
+    /**
+     * 验证签名, 验证通过后将响应中的加密数据解密。
+     */
+    static String parse(Base basePojo, String privateKey, String publicKey) {
         boolean verify = SM2EncryptionAndSignature.verify(publicKey, ObjectUtils.sortByDictOrderAndConcat(basePojo, "&", "signature"), basePojo.getSignature());
         if (!verify) {
             throw new VerifySignatureException("验签失败");
@@ -21,7 +25,10 @@ public abstract class BaseApiProcessor {
         return SM2EncryptionAndSignature.decrypt(privateKey, basePojo.getData());
     }
 
-    public static <T> void assignment(Base basePojo, String clientPrivateKey, String serverPublicKey, T data) {
+    /**
+     * 为apiRequest或者apiResponse对象赋值(加密+加签)
+     */
+    static <T> void assignment(Base basePojo, String clientPrivateKey, String serverPublicKey, T data) {
 
         String encryptData = SM2EncryptionAndSignature.encrypt(serverPublicKey, JsonUtils.toString(data));
 

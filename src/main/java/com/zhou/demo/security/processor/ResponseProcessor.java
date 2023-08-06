@@ -1,4 +1,4 @@
-package com.zhou.demo.security;
+package com.zhou.demo.security.processor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhou.demo.security.request.ApiResponse;
@@ -25,7 +25,6 @@ public class ResponseProcessor extends BaseApiProcessor {
         return apiResponse;
     }
 
-
     /**
      * ApiRequest parse
      */
@@ -33,6 +32,9 @@ public class ResponseProcessor extends BaseApiProcessor {
         return JsonUtils.parse(parse(apiResponse, clientPrivateKey, serverPublicKey), beanType);
     }
 
+    /**
+     * 多层范型json对象解析
+     */
     public static <T> T parseApiResponse(ApiResponse apiResponse, String clientPrivateKey, String serverPublicKey, TypeReference<T> beanType) {
         return JsonUtils.parseWithTypeReference(parse(apiResponse, clientPrivateKey, serverPublicKey), beanType);
     }

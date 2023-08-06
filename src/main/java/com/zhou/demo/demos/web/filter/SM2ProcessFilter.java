@@ -2,8 +2,8 @@ package com.zhou.demo.demos.web.filter;
 
 import com.zhou.demo.demos.web.wrapper.ContextCachingRequestWrapper;
 import com.zhou.demo.demos.web.wrapper.ContextCachingResponseWrapper;
-import com.zhou.demo.security.RequestProcessor;
-import com.zhou.demo.security.ResponseProcessor;
+import com.zhou.demo.security.processor.RequestProcessor;
+import com.zhou.demo.security.processor.ResponseProcessor;
 import com.zhou.demo.security.SMConst;
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.security.request.ApiResponse;
@@ -27,10 +27,8 @@ import java.util.Map;
 @WebFilter(urlPatterns = "/api/*")
 public class SM2ProcessFilter implements Filter {
 
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.zhou.demo.com.zhou.demo.security;
 
-import com.zhou.demo.security.RequestProcessor;
+import com.zhou.demo.security.processor.RequestProcessor;
 import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.util.JsonUtils;
@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 import static com.zhou.demo.com.zhou.demo.security.ConstTest.*;
 
 
-public class RequestProcessorTest {
+class RequestProcessorTest {
 
     private static DemoDto demo;
     private static ApiRequest apiRequest;

@@ -13,7 +13,7 @@ import static com.zhou.demo.com.zhou.demo.security.ConstTest.*;
 /**
  * SM2KeyAbstract Test
  */
-public class SM2KeyAbstractTest extends SM2KeyAbstract {
+class SM2KeyAbstractTest extends SM2KeyAbstract {
 
     @Test
     void generateSharedSecret() {

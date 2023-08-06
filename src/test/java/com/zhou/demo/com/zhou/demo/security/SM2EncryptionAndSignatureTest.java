@@ -9,7 +9,7 @@ import static com.zhou.demo.com.zhou.demo.security.ConstTest.*;
 /**
  * SM2EncryptionAndSignature Test
  */
-public class SM2EncryptionAndSignatureTest {
+class SM2EncryptionAndSignatureTest {
 
     /**
      * 测试公钥加密、私钥解密、私钥签名、公钥验签名

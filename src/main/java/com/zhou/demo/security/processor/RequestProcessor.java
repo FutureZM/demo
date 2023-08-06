@@ -1,4 +1,4 @@
-package com.zhou.demo.security;
+package com.zhou.demo.security.processor;
 
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.util.JsonUtils;
