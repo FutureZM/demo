@@ -8,6 +8,7 @@ import com.zhou.demo.security.SMConst;
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.security.request.ApiResponse;
 import com.zhou.demo.util.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 
 import javax.servlet.*;
@@ -24,6 +25,7 @@ import java.util.Map;
  *
  * @author laurence
  */
+@Slf4j
 @WebFilter(urlPatterns = "/api/*")
 public class SM2ProcessFilter implements Filter {
 
@@ -39,6 +41,7 @@ public class SM2ProcessFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
+        long start = System.currentTimeMillis();
         //此处使用包装类, 是为了解决servletRequest、servletResponse一次读取后内容失效的问题
         requestWrapper = new ContextCachingRequestWrapper(request);
         responseWrapper = new ContextCachingResponseWrapper((HttpServletResponse) servletResponse);
@@ -59,9 +62,11 @@ public class SM2ProcessFilter implements Filter {
             //解密后写回request, 用于后续的业务处理
             requestWrapper.setBody(JsonUtils.toString(map));
         }
+        log.info("In Filter, process verify and decrypt cost: " + (System.currentTimeMillis() - start) + "ms");
 
         filterChain.doFilter(requestWrapper, responseWrapper);
 
+        start = System.currentTimeMillis();
         // 将修改后的响应写回到原始的HttpServletResponse
         servletResponse.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
 
@@ -71,6 +76,8 @@ public class SM2ProcessFilter implements Filter {
         ApiResponse apiResponse = ResponseProcessor.buildApiResponse(SMConst.SERVER_PRIVATE_KEY, SMConst.CLIENT_PUBLIC_KEY, JsonUtils.parse(responseCtx, Map.class));
         // 写回response对象
         servletResponse.getWriter().write(JsonUtils.toString(apiResponse));
+        log.info("In Filter, process encrypt and signature cost: " + (System.currentTimeMillis() - start) + "ms");
+
     }
 
     @Override

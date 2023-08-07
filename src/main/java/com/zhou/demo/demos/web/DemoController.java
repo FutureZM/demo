@@ -56,14 +56,19 @@ public class DemoController {
     public Result<DemoDto> clientSm2Demo(@RequestBody DemoDto demoDto) {
         //log.info("---> " + "in client, controller receive: " + JsonUtils.toString(demoDto));
         String url = "http://127.0.0.1:" + serverPort + "/api/sm2demo";
+
+        long start = System.currentTimeMillis();
         ApiRequest apiRequest = RequestProcessor.buildApiRequest(SMConst.APP_ID, SMConst.CLIENT_PRIVATE_KEY, SMConst.SERVER_PUBLIC_KEY, demoDto);
+        log.info("In DemoController, buildApiRequest cost: " + (System.currentTimeMillis() - start) + "ms");
         //log.info("---> " + "in client, buildApiRequest   : " + JsonUtils.toString(apiRequest));
         String res = HttpUtils.sendPostJsonRequest(url, JsonUtils.toString(apiRequest));
         //log.info("---> " + "in client, okhttp response   : " + JsonUtils.toString(res));
 
+        start = System.currentTimeMillis();
         ApiResponse apiResponse = JsonUtils.parse(res, ApiResponse.class);
         Result<DemoDto> result = ResponseProcessor.parseApiResponse(apiResponse, SMConst.CLIENT_PRIVATE_KEY, SMConst.SERVER_PUBLIC_KEY, new TypeReference<Result<DemoDto>>() {
         });
+        log.info("In DemoController, parseApiResponse cost: " + (System.currentTimeMillis() - start) + "ms");
 
         //log.info("---> " + "in client, JsonUtils.parse   : " + JsonUtils.toString(result));
         return Result.success(result.getData());
