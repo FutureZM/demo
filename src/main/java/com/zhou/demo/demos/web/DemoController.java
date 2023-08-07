@@ -1,10 +1,10 @@
 package com.zhou.demo.demos.web;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.zhou.demo.demos.web.config.ClientSM2Config;
 import com.zhou.demo.demos.web.result.Result;
 import com.zhou.demo.security.processor.RequestProcessor;
 import com.zhou.demo.security.processor.ResponseProcessor;
-import com.zhou.demo.security.SMConst;
 import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.security.request.ApiResponse;
@@ -12,6 +12,7 @@ import com.zhou.demo.util.HttpUtils;
 import com.zhou.demo.util.JsonUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,9 @@ public class DemoController {
 
     @Value("${server.port}")
     private String serverPort;
+
+    @Autowired
+    private ClientSM2Config clientConfig;
 
     @PostMapping("/demo")
     public Result<DemoDto> demo(@RequestBody DemoDto demoDto) {
@@ -54,24 +58,19 @@ public class DemoController {
     @SneakyThrows
     @PostMapping("/client/api/demo")
     public Result<DemoDto> clientSm2Demo(@RequestBody DemoDto demoDto) {
-        //log.info("---> " + "in client, controller receive: " + JsonUtils.toString(demoDto));
         String url = "http://127.0.0.1:" + serverPort + "/api/sm2demo";
 
         long start = System.currentTimeMillis();
-        ApiRequest apiRequest = RequestProcessor.buildApiRequest(SMConst.APP_ID, SMConst.CLIENT_PRIVATE_KEY, SMConst.SERVER_PUBLIC_KEY, demoDto);
+        ApiRequest apiRequest = RequestProcessor.buildApiRequest(clientConfig.getAppId(), clientConfig.getPrivateKey(), clientConfig.getServerPublicKey(), demoDto);
         log.info("In DemoController, buildApiRequest cost: " + (System.currentTimeMillis() - start) + "ms");
-        //log.info("---> " + "in client, buildApiRequest   : " + JsonUtils.toString(apiRequest));
         String res = HttpUtils.sendPostJsonRequest(url, JsonUtils.toString(apiRequest));
-        //log.info("---> " + "in client, okhttp response   : " + JsonUtils.toString(res));
 
         start = System.currentTimeMillis();
         ApiResponse apiResponse = JsonUtils.parse(res, ApiResponse.class);
-        Result<DemoDto> result = ResponseProcessor.parseApiResponse(apiResponse, SMConst.CLIENT_PRIVATE_KEY, SMConst.SERVER_PUBLIC_KEY, new TypeReference<Result<DemoDto>>() {
+        Result<DemoDto> result = ResponseProcessor.parseApiResponse(apiResponse, clientConfig.getPrivateKey(), clientConfig.getServerPublicKey(), new TypeReference<Result<DemoDto>>() {
         });
         log.info("In DemoController, parseApiResponse cost: " + (System.currentTimeMillis() - start) + "ms");
 
-        //log.info("---> " + "in client, JsonUtils.parse   : " + JsonUtils.toString(result));
         return Result.success(result.getData());
     }
-
 }

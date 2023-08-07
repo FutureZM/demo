@@ -1,6 +1,8 @@
 package com.zhou.demo.security.processor;
 
+import com.zhou.demo.demos.web.config.ServerSM2Config;
 import com.zhou.demo.security.SM2EncryptionAndSignature;
+import com.zhou.demo.security.enums.ApiSecurityType;
 import com.zhou.demo.security.exception.SignatureException;
 import com.zhou.demo.security.exception.VerifySignatureException;
 import com.zhou.demo.security.request.Base;
@@ -16,13 +18,21 @@ abstract class BaseApiProcessor {
     /**
      * 验证签名, 验证通过后将响应中的加密数据解密。
      */
-    static String parse(Base basePojo, String privateKey, String publicKey) {
-        boolean verify = SM2EncryptionAndSignature.verify(publicKey, ObjectUtils.sortByDictOrderAndConcat(basePojo, "&", "signature"), basePojo.getSignature());
+    static String parse(Base basePojo, ServerSM2Config serverConfig, ApiSecurityType type) {
+        boolean verify = SM2EncryptionAndSignature.verify(serverConfig.getPublicKey(), ObjectUtils.sortByDictOrderAndConcat(basePojo, "&", "signature"), basePojo.getSignature());
         if (!verify) {
             throw new VerifySignatureException("验签失败");
         }
 
-        return SM2EncryptionAndSignature.decrypt(privateKey, basePojo.getData());
+        switch (type) {
+            case SM2_SIMPLE:
+                return SM2EncryptionAndSignature.decrypt(serverConfig.getPrivateKey(), basePojo.getData());
+            case SM2_WITH_SHARED_KEY:
+                return SM2EncryptionAndSignature.decryptWithSharedKey(serverConfig.getAgreementKey(), basePojo.getData());
+            default:
+                return null;
+        }
+
     }
 
     /**

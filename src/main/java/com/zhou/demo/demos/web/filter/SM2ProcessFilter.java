@@ -1,14 +1,15 @@
 package com.zhou.demo.demos.web.filter;
 
+import com.zhou.demo.demos.web.config.ServerSM2Config;
 import com.zhou.demo.demos.web.wrapper.ContextCachingRequestWrapper;
 import com.zhou.demo.demos.web.wrapper.ContextCachingResponseWrapper;
 import com.zhou.demo.security.processor.RequestProcessor;
 import com.zhou.demo.security.processor.ResponseProcessor;
-import com.zhou.demo.security.SMConst;
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.security.request.ApiResponse;
 import com.zhou.demo.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
 import javax.servlet.*;
@@ -28,6 +29,9 @@ import java.util.Map;
 @Slf4j
 @WebFilter(urlPatterns = "/api/*")
 public class SM2ProcessFilter implements Filter {
+
+    @Autowired
+    private ServerSM2Config serverConfig;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -57,7 +61,7 @@ public class SM2ProcessFilter implements Filter {
             }
 
             ApiRequest apiRequest = JsonUtils.parse(data.toString(), ApiRequest.class);
-            Map map = RequestProcessor.parseApiRequest(apiRequest, SMConst.SERVER_PRIVATE_KEY, SMConst.CLIENT_PUBLIC_KEY, Map.class);
+            Map map = RequestProcessor.parseApiRequest(apiRequest, serverConfig, Map.class);
 
             //解密后写回request, 用于后续的业务处理
             requestWrapper.setBody(JsonUtils.toString(map));
@@ -73,7 +77,7 @@ public class SM2ProcessFilter implements Filter {
         // 针对响应对象进行处理
         String responseCtx = new String(responseWrapper.toByteArray(), StandardCharsets.UTF_8);
         // - 完成加密和签名
-        ApiResponse apiResponse = ResponseProcessor.buildApiResponse(SMConst.SERVER_PRIVATE_KEY, SMConst.CLIENT_PUBLIC_KEY, JsonUtils.parse(responseCtx, Map.class));
+        ApiResponse apiResponse = ResponseProcessor.buildApiResponse(serverConfig.getPrivateKey(), serverConfig.getClientPublicKey(), JsonUtils.parse(responseCtx, Map.class));
         // 写回response对象
         servletResponse.getWriter().write(JsonUtils.toString(apiResponse));
         log.info("In Filter, process encrypt and signature cost: " + (System.currentTimeMillis() - start) + "ms");

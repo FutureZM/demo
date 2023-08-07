@@ -20,7 +20,7 @@ import java.math.BigInteger;
  */
 public abstract class SM2KeyAbstract {
 
-    protected String generateSharedSecret(String ownPrivateKey, String otherPublicKey) {
+    public static String generateSharedSecret(String ownPrivateKey, String otherPublicKey) {
         // 创建ECPublicKeyParameters
         ECPublicKeyParameters publicKeyParameters = convertECPublicKeyParameters(otherPublicKey);
 

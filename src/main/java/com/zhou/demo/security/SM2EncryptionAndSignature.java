@@ -1,5 +1,6 @@
 package com.zhou.demo.security;
 
+import cn.hutool.core.util.HexUtil;
 import com.zhou.demo.util.HexUtils;
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.engines.SM2Engine;
@@ -9,9 +10,14 @@ import org.bouncycastle.crypto.params.ParametersWithID;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.crypto.signers.SM2Signer;
 import org.bouncycastle.util.Strings;
+import org.bouncycastle.util.encoders.Hex;
 
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 /**
@@ -42,6 +48,22 @@ public class SM2EncryptionAndSignature extends SM2KeyAbstract {
         return HexUtils.encodeHexStr(arrayOfBytes, false);
     }
 
+
+    public static String encryptWithSharedKey(String sharedKeyHex, String data) {
+        SecretKey sharedKey = new SecretKeySpec(HexUtils.decodeHex(sharedKeyHex), 0, 16, "SM4");
+        byte[] messageBytes = data.getBytes(StandardCharsets.UTF_8);
+        Cipher cipher;
+        try {
+            cipher = Cipher.getInstance("SM4/ECB/PKCS5Padding", "BC");
+            cipher.init(Cipher.ENCRYPT_MODE, sharedKey);
+            byte[] encryptedMessage = cipher.doFinal(messageBytes);
+            return HexUtils.encodeHexStr(encryptedMessage, false);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * SM2解密算法
      *
@@ -58,6 +80,19 @@ public class SM2EncryptionAndSignature extends SM2KeyAbstract {
             byte[] arrayOfBytes = sm2Engine.processBlock(cipherDataByte, 0, cipherDataByte.length);
             return new String(arrayOfBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String decryptWithSharedKey(String sharedKeyHex, String cipherData) {
+        SecretKey sharedKey = new SecretKeySpec(Hex.decode(sharedKeyHex), 0, 16, "SM4");
+        try {
+            Cipher decryptionCipher = Cipher.getInstance("SM4/ECB/PKCS5Padding", "BC");
+            decryptionCipher.init(Cipher.DECRYPT_MODE, sharedKey);
+            byte[] decryptedMessage = decryptionCipher.doFinal(HexUtil.decodeHex(cipherData));
+            return new String(decryptedMessage, StandardCharsets.UTF_8);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | BadPaddingException | NoSuchProviderException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
         return null;
@@ -93,14 +128,15 @@ public class SM2EncryptionAndSignature extends SM2KeyAbstract {
 
     /**
      * 验证签名
-     * @param publicKey     公钥
-     * @param content       待签名内容
-     * @param sign          签名值
+     *
+     * @param publicKey 公钥
+     * @param content   待签名内容
+     * @param sign      签名值
      */
     public static boolean verify(String publicKey, String content, String sign) {
         //待签名内容
         byte[] message = HexUtils.encodeHexStr(content).getBytes();
-        byte[] signData =  HexUtils.decodeHex(sign);
+        byte[] signData = HexUtils.decodeHex(sign);
 
         ECPublicKeyParameters publicKeyParameters = convertECPublicKeyParameters(publicKey);
         //创建签名实例

@@ -1,5 +1,7 @@
 package com.zhou.demo.security.processor;
 
+import com.zhou.demo.demos.web.config.ServerSM2Config;
+import com.zhou.demo.security.enums.ApiSecurityType;
 import com.zhou.demo.security.request.ApiRequest;
 import com.zhou.demo.util.JsonUtils;
 
@@ -31,7 +33,7 @@ public class RequestProcessor extends BaseApiProcessor {
     /**
      * ApiRequest parse
      */
-    public static <T> T parseApiRequest(ApiRequest apiRequest, String serverPrivateKey, String clientPublicKey, Class<T> beanType) {
-        return JsonUtils.parse(parse(apiRequest, serverPrivateKey, clientPublicKey), beanType);
+    public static <T> T parseApiRequest(ApiRequest apiRequest, ServerSM2Config serverConfig, Class<T> beanType) {
+        return JsonUtils.parse(parse(apiRequest, serverConfig, ApiSecurityType.SM2_WITH_SHARED_KEY), beanType);
     }
 }
