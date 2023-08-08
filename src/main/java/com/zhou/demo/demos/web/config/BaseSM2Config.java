@@ -48,6 +48,11 @@ public class BaseSM2Config extends SM2Config {
         return agreementKey;
     }
 
+    public BaseSM2Config setAgreementKey(String agreementKey) {
+        this.agreementKey = agreementKey;
+        return this;
+    }
+
     public ApiSecurityType getApiSecurityType() {
         return apiSecurityType;
     }

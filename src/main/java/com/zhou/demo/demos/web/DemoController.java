@@ -3,6 +3,7 @@ package com.zhou.demo.demos.web;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhou.demo.demos.web.config.BaseSM2Config;
 import com.zhou.demo.demos.web.config.ClientSM2Config;
+import com.zhou.demo.demos.web.db.ApiAccessCtx;
 import com.zhou.demo.demos.web.result.Result;
 import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.enums.ApiSecurityType;
@@ -66,20 +67,20 @@ public class DemoController {
     public Result<DemoDto> clientSm2Demo(@RequestBody DemoDto demoDto) {
         String url = "http://127.0.0.1:" + serverPort + "/api/sm2demo";
 
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         BaseSM2Config config = new BaseSM2Config().setAppId(clientConfig.getAppId()).setOtherSidePublicKey(clientConfig.getServerPublicKey());
         config.setPublicKey(clientConfig.getPublicKey()).setPrivateKey(clientConfig.getPrivateKey());
         config.setApiSecurityType(ApiSecurityType.SM2_SIMPLE);
 
         ApiRequest apiRequest = RequestProcessor.buildApiRequest(config, demoDto);
-        log.info("In DemoController, buildApiRequest cost: " + (System.currentTimeMillis() - start) + "ms");
+//        log.info("In DemoController, buildApiRequest cost: " + (System.currentTimeMillis() - start) + "ms");
         String res = HttpUtils.sendPostJsonRequest(url, JsonUtils.toString(apiRequest));
 
-        start = System.currentTimeMillis();
+//        start = System.currentTimeMillis();
         ApiResponse apiResponse = JsonUtils.parse(res, ApiResponse.class);
         Result<DemoDto> result = ResponseProcessor.parseApiResponse(apiResponse, config, new TypeReference<Result<DemoDto>>() {
         });
-        log.info("In DemoController, parseApiResponse cost: " + (System.currentTimeMillis() - start) + "ms");
+//        log.info("In DemoController, parseApiResponse cost: " + (System.currentTimeMillis() - start) + "ms");
 
         return Result.success(result.getData());
     }
@@ -89,21 +90,21 @@ public class DemoController {
     public Result<DemoDto> clientSharedKeySm2Demo(@RequestBody DemoDto demoDto) {
         String url = "http://127.0.0.1:" + serverPort + "/api/sm2demo";
 
-        long start = System.currentTimeMillis();
-        BaseSM2Config config = new BaseSM2Config().setAppId(environment.getProperty("demo.client1.appId"))
+        String appId = environment.getProperty("demo.client1.appId");
+        BaseSM2Config config = new BaseSM2Config().setAppId(appId)
                 .setOtherSidePublicKey(clientConfig.getServerPublicKey());
         config.setPublicKey(clientConfig.getPublicKey()).setPrivateKey(clientConfig.getPrivateKey());
         config.setApiSecurityType(ApiSecurityType.SM2_WITH_SHARED_KEY);
 
+        //模拟从缓存中取出协商密钥的逻辑
+        config.setAgreementKey(ApiAccessCtx.ACCESS_CTX_MAP.get(appId).getSharedKey());
+
         ApiRequest apiRequest = RequestProcessor.buildApiRequest(config, demoDto);
-        log.info("In DemoController, buildApiRequest cost: " + (System.currentTimeMillis() - start) + "ms");
         String res = HttpUtils.sendPostJsonRequest(url, JsonUtils.toString(apiRequest));
 
-        start = System.currentTimeMillis();
         ApiResponse apiResponse = JsonUtils.parse(res, ApiResponse.class);
         Result<DemoDto> result = ResponseProcessor.parseApiResponse(apiResponse, config, new TypeReference<Result<DemoDto>>() {
         });
-        log.info("In DemoController, parseApiResponse cost: " + (System.currentTimeMillis() - start) + "ms");
 
         return Result.success(result.getData());
     }

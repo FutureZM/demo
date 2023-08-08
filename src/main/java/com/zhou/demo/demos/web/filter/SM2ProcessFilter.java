@@ -72,6 +72,9 @@ public class SM2ProcessFilter implements Filter {
             inServerConfig.setApiSecurityType(ApiAccessCtx.ACCESS_CTX_MAP.get(apiRequest.getAppId()).getType());
             inServerConfig.setOtherSidePublicKey(ApiAccessCtx.ACCESS_CTX_MAP.get(apiRequest.getAppId()).getPublicKey());
 
+            //模拟从缓存中取出协商密钥的逻辑
+            inServerConfig.setAgreementKey(ApiAccessCtx.ACCESS_CTX_MAP.get(apiRequest.getAppId()).getSharedKey());
+
             Map map = RequestProcessor.parseApiRequest(apiRequest, inServerConfig, Map.class);
 
             //解密后写回request, 用于后续的业务处理
