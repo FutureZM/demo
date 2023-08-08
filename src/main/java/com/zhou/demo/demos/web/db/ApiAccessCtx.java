@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public class ApiAccessCtx {
 
+    /**
+     * 模拟数据库存储和缓存
+     */
     public static final Map<String, AccessPair> ACCESS_CTX_MAP = ImmutableMap.of(
             "c-appId-demo-SM2", new AccessPair()
                     .setAppId("c-appId-demo-SM2")
@@ -25,6 +28,7 @@ public class ApiAccessCtx {
     );
 
     static {
+        //根据自己的私钥与对方的公钥, 提前计算密钥协商结果, 缓存以备后续加解密使用
         String serverPrivateKey = "4ADDC747BEC7557EDCC15758F85A86E4328A4139B15FEE5529A2136353B5048C";
         ACCESS_CTX_MAP.forEach((appId, pair) -> {
             if (pair.getType().equals(ApiSecurityType.SM2_WITH_SHARED_KEY)) {

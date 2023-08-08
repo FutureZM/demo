@@ -67,20 +67,16 @@ public class DemoController {
     public Result<DemoDto> clientSm2Demo(@RequestBody DemoDto demoDto) {
         String url = "http://127.0.0.1:" + serverPort + "/api/sm2demo";
 
-//        long start = System.currentTimeMillis();
         BaseSM2Config config = new BaseSM2Config().setAppId(clientConfig.getAppId()).setOtherSidePublicKey(clientConfig.getServerPublicKey());
         config.setPublicKey(clientConfig.getPublicKey()).setPrivateKey(clientConfig.getPrivateKey());
         config.setApiSecurityType(ApiSecurityType.SM2_SIMPLE);
 
         ApiRequest apiRequest = RequestProcessor.buildApiRequest(config, demoDto);
-//        log.info("In DemoController, buildApiRequest cost: " + (System.currentTimeMillis() - start) + "ms");
         String res = HttpUtils.sendPostJsonRequest(url, JsonUtils.toString(apiRequest));
 
-//        start = System.currentTimeMillis();
         ApiResponse apiResponse = JsonUtils.parse(res, ApiResponse.class);
         Result<DemoDto> result = ResponseProcessor.parseApiResponse(apiResponse, config, new TypeReference<Result<DemoDto>>() {
         });
-//        log.info("In DemoController, parseApiResponse cost: " + (System.currentTimeMillis() - start) + "ms");
 
         return Result.success(result.getData());
     }

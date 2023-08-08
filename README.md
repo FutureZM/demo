@@ -64,3 +64,18 @@
       Average:	0.4039 secs
       Requests/sec:	120.6325
     ```
+  
+- client/api/sharedKey/demo
+    - 命令
+    ```bash
+    hey -c 50 -n 1000 -m POST  -T "application/json" -d '{"name": "2023年了, 谁还用传统的编程方式", "age": 25}'  http://127.0.0.1:8080/client/api/sharedKey/demo
+    ```
+    - 结果
+    ```text
+    Summary:
+      Total:	2.4481 secs
+      Slowest:	0.3379 secs
+      Fastest:	0.0179 secs
+      Average:	0.1130 secs
+      Requests/sec:	408.4838
+    ```

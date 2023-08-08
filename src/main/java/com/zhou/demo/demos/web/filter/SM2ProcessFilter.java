@@ -80,7 +80,6 @@ public class SM2ProcessFilter implements Filter {
             //解密后写回request, 用于后续的业务处理
             requestWrapper.setBody(JsonUtils.toString(map));
         }
-        log.info("In Filter, process verify and decrypt cost: " + (System.currentTimeMillis() - start) + "ms");
 
         filterChain.doFilter(requestWrapper, responseWrapper);
 
@@ -94,8 +93,6 @@ public class SM2ProcessFilter implements Filter {
         ApiResponse apiResponse = ResponseProcessor.buildApiResponse(inServerConfig, JsonUtils.parse(responseCtx, Map.class));
         // 写回response对象
         servletResponse.getWriter().write(JsonUtils.toString(apiResponse));
-        log.info("In Filter, process encrypt and signature cost: " + (System.currentTimeMillis() - start) + "ms");
-
     }
 
     @Override
