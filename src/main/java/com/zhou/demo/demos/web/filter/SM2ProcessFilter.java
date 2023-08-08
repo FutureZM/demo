@@ -1,6 +1,8 @@
 package com.zhou.demo.demos.web.filter;
 
+import com.zhou.demo.demos.web.config.BaseSM2Config;
 import com.zhou.demo.demos.web.config.ServerSM2Config;
+import com.zhou.demo.demos.web.db.ApiAccessCtx;
 import com.zhou.demo.demos.web.wrapper.ContextCachingRequestWrapper;
 import com.zhou.demo.demos.web.wrapper.ContextCachingResponseWrapper;
 import com.zhou.demo.security.processor.RequestProcessor;
@@ -51,6 +53,7 @@ public class SM2ProcessFilter implements Filter {
         responseWrapper = new ContextCachingResponseWrapper((HttpServletResponse) servletResponse);
 
         //处理SM2验证签名和解密
+        BaseSM2Config inServerConfig = null;
         if (request.getMethod().equals(HttpMethod.POST.name())) {
             StringBuilder data = new StringBuilder();
             String line;
@@ -61,7 +64,15 @@ public class SM2ProcessFilter implements Filter {
             }
 
             ApiRequest apiRequest = JsonUtils.parse(data.toString(), ApiRequest.class);
-            Map map = RequestProcessor.parseApiRequest(apiRequest, serverConfig, Map.class);
+            assert apiRequest != null;
+
+            inServerConfig = new BaseSM2Config();
+            inServerConfig.setPrivateKey(serverConfig.getPrivateKey());
+            inServerConfig.setPublicKey(serverConfig.getPublicKey());
+            inServerConfig.setApiSecurityType(ApiAccessCtx.ACCESS_CTX_MAP.get(apiRequest.getAppId()).getType());
+            inServerConfig.setOtherSidePublicKey(ApiAccessCtx.ACCESS_CTX_MAP.get(apiRequest.getAppId()).getPublicKey());
+
+            Map map = RequestProcessor.parseApiRequest(apiRequest, inServerConfig, Map.class);
 
             //解密后写回request, 用于后续的业务处理
             requestWrapper.setBody(JsonUtils.toString(map));
@@ -77,7 +88,7 @@ public class SM2ProcessFilter implements Filter {
         // 针对响应对象进行处理
         String responseCtx = new String(responseWrapper.toByteArray(), StandardCharsets.UTF_8);
         // - 完成加密和签名
-        ApiResponse apiResponse = ResponseProcessor.buildApiResponse(serverConfig.getPrivateKey(), serverConfig.getClientPublicKey(), JsonUtils.parse(responseCtx, Map.class));
+        ApiResponse apiResponse = ResponseProcessor.buildApiResponse(inServerConfig, JsonUtils.parse(responseCtx, Map.class));
         // 写回response对象
         servletResponse.getWriter().write(JsonUtils.toString(apiResponse));
         log.info("In Filter, process encrypt and signature cost: " + (System.currentTimeMillis() - start) + "ms");

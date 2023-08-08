@@ -1,6 +1,7 @@
 package com.zhou.demo.security;
 
 import cn.hutool.core.util.HexUtil;
+import com.zhou.demo.demos.web.config.BaseSM2Config;
 import com.zhou.demo.util.HexUtils;
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.engines.SM2Engine;
@@ -9,21 +10,23 @@ import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.crypto.params.ParametersWithID;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.crypto.signers.SM2Signer;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Strings;
 import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
+import java.security.*;
 
 /**
  * @author laurence
  */
 public class SM2EncryptionAndSignature extends SM2KeyAbstract {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     /**
      * SM2加密算法
@@ -48,6 +51,16 @@ public class SM2EncryptionAndSignature extends SM2KeyAbstract {
         return HexUtils.encodeHexStr(arrayOfBytes, false);
     }
 
+    public static String encrypt(BaseSM2Config inServerConfig, String data) {
+        switch (inServerConfig.getApiSecurityType()) {
+            case SM2_SIMPLE:
+                return encrypt(inServerConfig.getOtherSidePublicKey(), data);
+            case SM2_WITH_SHARED_KEY:
+                return encryptWithSharedKey(inServerConfig.getAgreementKey(), data);
+            default:
+                return null;
+        }
+    }
 
     public static String encryptWithSharedKey(String sharedKeyHex, String data) {
         SecretKey sharedKey = new SecretKeySpec(HexUtils.decodeHex(sharedKeyHex), 0, 16, "SM4");

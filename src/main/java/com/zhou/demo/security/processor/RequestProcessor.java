@@ -1,9 +1,13 @@
 package com.zhou.demo.security.processor;
 
-import com.zhou.demo.demos.web.config.ServerSM2Config;
-import com.zhou.demo.security.enums.ApiSecurityType;
+import com.zhou.demo.demos.web.config.BaseSM2Config;
+import com.zhou.demo.demos.web.config.ClientSM2Config;
+import com.zhou.demo.security.SM2EncryptionAndSignature;
+import com.zhou.demo.security.exception.VerifySignatureException;
 import com.zhou.demo.security.request.ApiRequest;
+import com.zhou.demo.security.request.Base;
 import com.zhou.demo.util.JsonUtils;
+import com.zhou.demo.util.ObjectUtils;
 
 import java.util.UUID;
 
@@ -18,22 +22,21 @@ public class RequestProcessor extends BaseApiProcessor {
     /**
      * ApiRequest build
      */
-    public static <T> ApiRequest buildApiRequest(String appId, String clientPrivateKey, String serverPublicKey, T data) {
-        ApiRequest apiRequest = new ApiRequest().setAppId(appId)
+    public static <T> ApiRequest buildApiRequest(BaseSM2Config config, T data) {
+        ApiRequest apiRequest = new ApiRequest().setAppId(config.getAppId())
                 //替换掉uuid中的-
                 .setNonce(UUID.randomUUID().toString().replace("-", ""));
 
         //赋值
-        assignment(apiRequest, clientPrivateKey, serverPublicKey, data);
+        assignment(apiRequest, config, data);
 
         return apiRequest;
     }
 
-
     /**
      * ApiRequest parse
      */
-    public static <T> T parseApiRequest(ApiRequest apiRequest, ServerSM2Config serverConfig, Class<T> beanType) {
-        return JsonUtils.parse(parse(apiRequest, serverConfig, ApiSecurityType.SM2_WITH_SHARED_KEY), beanType);
+    public static <T> T parseApiRequest(ApiRequest apiRequest, BaseSM2Config inServerConfig, Class<T> beanType) {
+        return JsonUtils.parse(parse(apiRequest, inServerConfig), beanType);
     }
 }
