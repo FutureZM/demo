@@ -1,6 +1,5 @@
 package com.zhou.demo.security;
 
-import cn.hutool.core.util.HexUtil;
 import com.zhou.demo.demos.web.config.BaseSM2Config;
 import com.zhou.demo.util.HexUtils;
 import org.bouncycastle.crypto.CryptoException;
@@ -103,7 +102,7 @@ public class SM2EncryptionAndSignature extends SM2KeyAbstract {
         try {
             Cipher decryptionCipher = Cipher.getInstance("SM4/ECB/PKCS5Padding", "BC");
             decryptionCipher.init(Cipher.DECRYPT_MODE, sharedKey);
-            byte[] decryptedMessage = decryptionCipher.doFinal(HexUtil.decodeHex(cipherData));
+            byte[] decryptedMessage = decryptionCipher.doFinal(HexUtils.decodeHex(cipherData));
             return new String(decryptedMessage, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | BadPaddingException | NoSuchProviderException | IllegalBlockSizeException e) {
             e.printStackTrace();
