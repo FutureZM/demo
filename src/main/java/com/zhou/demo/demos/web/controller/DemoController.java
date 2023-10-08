@@ -1,4 +1,4 @@
-package com.zhou.demo.demos.web;
+package com.zhou.demo.demos.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhou.demo.demos.web.config.BaseSM2Config;
