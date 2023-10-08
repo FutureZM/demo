@@ -14,4 +14,8 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
+    void demo() {
+        System.out.println("first111");
+    }
+
 }
