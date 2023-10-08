@@ -17,6 +17,7 @@ public class DemoApplication {
     void demo() {
         System.out.println("first111");
         System.out.println("second222");
+        System.out.println("third333");
     }
 
 }
