@@ -1,0 +1,19 @@
+# 应用服务 WEB 访问端口
+server:
+  port: 8080
+
+# mybatis 配置内容
+mybatis:
+  executor-type: reuse
+  config-location: classpath:config/mybatis-config.xml # 配置 MyBatis 配置文件路径
+  mapper-locations: classpath:mapper/*.xml # 配置 Mapper XML 地址
+
+logging:
+  config: classpath:config/logback-spring.xml
+
+spring:
+  application:
+    name: spring-boot-demo
+  profiles:
+    active: '@spring.profiles@'
+

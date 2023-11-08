@@ -3,8 +3,13 @@ package com.zhou.demo.demos.web.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhou.demo.demos.web.config.BaseSM2Config;
 import com.zhou.demo.demos.web.config.ClientSM2Config;
+import com.zhou.demo.demos.web.config.RefreshConfigProperties;
 import com.zhou.demo.demos.web.db.ApiAccessCtx;
+import com.zhou.demo.demos.web.event.ConfigUpdateEvent;
+import com.zhou.demo.demos.web.mapper.RegisterMapper;
+import com.zhou.demo.demos.web.model.RegisterInfo;
 import com.zhou.demo.demos.web.result.Result;
+import com.zhou.demo.demos.web.spring.AnoValueRefreshPostProcessor;
 import com.zhou.demo.security.dto.DemoDto;
 import com.zhou.demo.security.enums.ApiSecurityType;
 import com.zhou.demo.security.processor.RequestProcessor;
@@ -17,10 +22,17 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -38,6 +50,13 @@ public class DemoController {
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    ApplicationContext applicationContext;
+    @Autowired
+    ConfigurableEnvironment configEnvironment;
+    @Autowired
+    RefreshConfigProperties refreshConfigProperties;
 
     @PostMapping("/demo")
     public Result<DemoDto> demo(@RequestBody DemoDto demoDto) {
@@ -103,5 +122,36 @@ public class DemoController {
         });
 
         return Result.success(result.getData());
+    }
+
+    @GetMapping(path = "/dynamic/update")
+    public RefreshConfigProperties updateEnvironment(String key, String value) {
+//        String name = "applicationConfig: [classpath:/application.properties]";
+        String name = "Config resource 'class path resource [application.properties]' via location 'optional:classpath:/'";
+        MapPropertySource propertySource = (MapPropertySource) configEnvironment.getPropertySources().get(name);
+        assert propertySource != null;
+        Map<String, Object> source = propertySource.getSource();
+        Map<String, Object> map = new HashMap<>(source.size());
+        map.putAll(source);
+        map.put(key, value);
+        configEnvironment.getPropertySources().replace(name, new MapPropertySource(name, map));
+
+        applicationContext.publishEvent(new ConfigUpdateEvent(this, key));
+        return refreshConfigProperties;
+    }
+
+    @GetMapping(path = "/refresh/get")
+    public RefreshConfigProperties getRefreshConfigProperties() {
+        return refreshConfigProperties;
+    }
+
+    @Autowired
+    private RegisterMapper registerMapper;
+
+    @GetMapping("/db/demo/id")
+    public Long insertDbDorGenId(){
+        RegisterInfo registerInfo = new RegisterInfo().setName("insertDbDorGenId-demo").setPhone("11111111111").setStatus(999);
+        Integer integer = registerMapper.insertDbDorGenId(registerInfo);
+        return registerInfo.getId();
     }
 }
